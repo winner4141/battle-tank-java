@@ -12,13 +12,15 @@ import java.awt.Graphics;
  * @author Lijun
  */
 public class DialogBox extends javax.swing.JDialog {
-    Container c = new Container();
+    
     @Override
-    public Graphics getGraphics() {
-        return c.getGraphics();
+    public final Graphics getGraphics() {
+        return super.getGraphics();
     }
 
-    public DialogBox() {
+    public DialogBox(String text) {
         Graphics g = getGraphics();
+        g.drawString(text, 0,0);
+        repaint();
     }
 }

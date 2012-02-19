@@ -34,8 +34,6 @@ public class Explosion extends JPanel {
     private JFrame parent = null;
     public int id = 0;
     
-    Thread th1 = null;
-    
     public Explosion(int id) {
         this.id = id;
         Init();
@@ -43,7 +41,7 @@ public class Explosion extends JPanel {
 
     public void postExec(){
         if (this.callback == null) {
-           return;
+           throw new UnsupportedOperationException();
         }
         this.callback.postExec();
     }
@@ -60,7 +58,6 @@ public class Explosion extends JPanel {
                 if (index == 24) {
                     t.stop();
                     postExec();
-                    parent.repaint();
                 } else {
                     index++;
                 }
@@ -79,15 +76,14 @@ public class Explosion extends JPanel {
     public void Explode(final JFrame window, int posx, int posy) {
         this.posx = posx;
         this.posy = posy;
-
-        Explode(window);
+        this.parent = window;
+        
+        Explode();
     }
 
-    public void Explode(final JFrame window) {
-        this.parent = window;
-
-        th1 = new Thread(new Runnable() {
-
+    public void Explode() {
+        
+        Thread th1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 Expl();
@@ -96,7 +92,6 @@ public class Explosion extends JPanel {
         th1.start();
 
         Thread th2 = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 SoundEffect.PlayExplosion();

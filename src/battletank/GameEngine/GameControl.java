@@ -24,8 +24,7 @@ public class GameControl implements KeyListener {
     private static final int tankMoveTime = 50;
     /** Cas medzi jednotlivymi krokmi striel */
     private static final int bulletMoveTime = 30;
-    /** Rychlost pohybu tankov po mape. */
-    private static final int pixelPerMove = 5;
+    
     /** Timeout pre strelu z tank 1 */
     boolean freeze1 = false;
     /** Timeout pre strelu z tank 2 */
@@ -42,15 +41,31 @@ public class GameControl implements KeyListener {
     private int tank1direction = NONE;
     /** Smer tank 2 */
     private int tank2direction = NONE;
-    /** Herna struktura */
-    Game game = null;
+    /* Tank1 dopredu */
+    private final int t1Up = KeyEvent.VK_W;
+    /* Tank1 dozau */
+    private final int t1Down = KeyEvent.VK_S;
+    /* Tank1 dolava */
+    private final int t1Left = KeyEvent.VK_A;
+    /* Tank1 doprava */
+    private final int t1Right = KeyEvent.VK_D;
+    /* Tank1 strela */
+    private final int t1Shoot = KeyEvent.VK_SPACE;
+    /* Tank2 dopredu */
+    private final int t2Up = KeyEvent.VK_UP;
+    /* Tank2 dozadu */
+    private final int t2Down = KeyEvent.VK_DOWN;
+    /* Tank2 dolava */
+    private final int t2Left = KeyEvent.VK_LEFT;
+    /* Tank2 doprava */
+    private final int t2Right = KeyEvent.VK_RIGHT;
+    /* Tank2 strela */
+    private final int t2Shoot = KeyEvent.VK_ENTER;
     /** Prerusena hra */
     private boolean paused = false;
 
-    public GameControl(Game game) {
-        this.game = game;
+    public GameControl() {
         InitTimers();
-        StartAllTimers();
     }
 
     private void InitTimers() {
@@ -76,8 +91,12 @@ public class GameControl implements KeyListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.tank1.Move(pixelPerMove);
-                game.tank2.Move(pixelPerMove);
+                if (game == null) {
+                    return;
+                }
+                // Kvoli strelbe tankov, ked stoji na mieste, vtedy smer nie je zaznamenany v tankoch
+                // aby to nekomplikovalo timer na pohyb tankov.
+                game.tanksMove(tank1direction, tank2direction);
             }
         });
 
@@ -85,15 +104,10 @@ public class GameControl implements KeyListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<Bullet> bullets = game.tank1.bullets;
-                for (Bullet b : bullets) {
-                    b.move(pixelPerMove);
+                if (game == null) {
+                    return;
                 }
-
-                bullets = game.tank1.bullets;
-                for (Bullet b : bullets) {
-                    b.move(pixelPerMove);
-                }
+                game.BulletsMove();
             }
         });
     }
@@ -118,76 +132,78 @@ public class GameControl implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        int keycode = e.getKeyCode();
+
+        if (keycode == KeyEvent.VK_ESCAPE) {
             if (paused) {
                 StartAllTimers();
             } else {
                 StopAllTimers();
+
             }
             paused = !paused;
             return;
         }
-
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (!freeze1) {
-                game.tank1.Shot();
-                freeze1 = true;
-                freezeTimer1.start();
+        switch (keycode) {
+            // Strelba tank 1 po stlaceni medzernik
+            case t1Shoot: {
+                if (!freeze1) {
+                    game.tank1.Shot();
+                    freeze1 = true;
+                    freezeTimer1.start();
+                }
+                break;
             }
-        }
 
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (!freeze2) {
-                freeze2 = true;
-                game.tank2.Shot();
-                freezeTimer2.start();
+            // Strelba tank 1 po stlaceni Enter
+            case t2Shoot: {
+                if (!freeze2) {
+                    game.tank2.Shot();
+                    freeze2 = true;
+                    freezeTimer2.start();
+                }
+                break;
             }
-        }
-
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP: {
+                
+            case t1Up: {
+                tank1direction = UP;
+                break;
+            }
+            case t1Down: {
+                tank1direction = DOWN;
+                break;
+            }
+            case t1Left: {
+                tank1direction = LEFT;
+                break;
+            }
+            case t1Right: {
+                tank1direction = RIGHT;
+                break;
+            }
+            case t2Up: {
                 tank2direction = UP;
                 break;
             }
-            case KeyEvent.VK_DOWN: {
+            case t2Down: {
                 tank2direction = DOWN;
                 break;
             }
-            case KeyEvent.VK_LEFT: {
+            case t2Left: {
                 tank2direction = LEFT;
                 break;
             }
-            case KeyEvent.VK_RIGHT: {
+            case t2Right: {
                 tank2direction = RIGHT;
                 break;
             }
 
-            case KeyEvent.VK_W: {
-                tank1direction = UP;
-                break;
-            }
-            case KeyEvent.VK_S: {
-                tank1direction = DOWN;
-                break;
-            }
-            case KeyEvent.VK_A: {
-                tank1direction = LEFT;
-                break;
-            }
-            case KeyEvent.VK_D: {
-                tank1direction = RIGHT;
-                break;
-            }
             default:
                 break;
         }
 
-        game.tank1.direction = tank1direction;
-        game.tank2.direction = tank2direction;
-
-        System.out.print(tank1direction);
-        System.out.println(tank2direction);
-
+        if (tank1direction!=NONE)game.tank1.direction = tank1direction;
+        if (tank2direction!=NONE)game.tank2.direction = tank2direction;
 
     }
 
@@ -195,52 +211,52 @@ public class GameControl implements KeyListener {
     public void keyReleased(KeyEvent e) {
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP: {
-                if (tank1direction == UP) {
-                    tank1direction = NONE;
-                }
-                break;
-            }
-            case KeyEvent.VK_DOWN: {
-                if (tank1direction == DOWN) {
-                    tank1direction = NONE;
-                }
-                break;
-            }
-            case KeyEvent.VK_LEFT: {
-                if (tank1direction == LEFT) {
-                    tank1direction = NONE;
-                }
-                break;
-            }
-            case KeyEvent.VK_RIGHT: {
-                if (tank1direction == RIGHT) {
-                    tank1direction = NONE;
-                }
-                break;
-            }
-
-            case KeyEvent.VK_W: {
+            case t2Up: {
                 if (tank2direction == UP) {
                     tank2direction = NONE;
                 }
                 break;
             }
-            case KeyEvent.VK_S: {
+            case t2Down: {
                 if (tank2direction == DOWN) {
                     tank2direction = NONE;
                 }
                 break;
             }
-            case KeyEvent.VK_A: {
+            case t2Left: {
                 if (tank2direction == LEFT) {
                     tank2direction = NONE;
                 }
                 break;
             }
-            case KeyEvent.VK_D: {
+            case t2Right: {
                 if (tank2direction == RIGHT) {
                     tank2direction = NONE;
+                }
+                break;
+            }
+
+            case t1Up: {
+                if (tank1direction == UP) {
+                    tank1direction = NONE;
+                }
+                break;
+            }
+            case t1Down: {
+                if (tank1direction == DOWN) {
+                    tank1direction = NONE;
+                }
+                break;
+            }
+            case t1Left: {
+                if (tank1direction == LEFT) {
+                    tank1direction = NONE;
+                }
+                break;
+            }
+            case t1Right: {
+                if (tank1direction == RIGHT) {
+                    tank1direction = NONE;
                 }
                 break;
             }
@@ -248,10 +264,11 @@ public class GameControl implements KeyListener {
                 break;
         }
 
-        game.tank1.direction = tank1direction;
-        game.tank2.direction = tank2direction;
+        //game.tank1.direction = tank1direction;
+        //game.tank2.direction = tank2direction;
+    }
 
-        System.out.print(tank1direction);
-        System.out.println(tank2direction);
+    public void Start() {
+        StartAllTimers();
     }
 }

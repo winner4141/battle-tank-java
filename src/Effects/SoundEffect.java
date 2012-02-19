@@ -99,8 +99,7 @@ public class SoundEffect {
                 e.printStackTrace();
             }
             if (nBytesRead >= 0) {
-                @SuppressWarnings("unused")
-                int nBytesWritten = source.write(abData, 0, nBytesRead);
+                source.write(abData, 0, nBytesRead);
             }
         }
 

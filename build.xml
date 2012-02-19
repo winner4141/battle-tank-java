@@ -71,4 +71,13 @@
     nbproject/build-impl.xml file. 
 
     -->
+<target name="-post-jar">
+    <echo>Adding files to jar...</echo>
+    <jar destfile="dist/BattleTank.jar" update="true">
+        <fileset dir="${basedir}">
+            <include name="files/*"/>
+        </fileset>
+    </jar>
+</target>
+
 </project>
