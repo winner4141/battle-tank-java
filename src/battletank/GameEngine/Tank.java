@@ -4,7 +4,6 @@
  */
 package battletank.GameEngine;
 
-import battletank.GUI.GameWindow;
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.Random;
@@ -25,10 +24,10 @@ public class Tank {
     public int xcoord = 0;
     public int ycoord = 0;
 
+    /** Pri vytvoreni tanku musi byt niekde umiestneni, preto zakazem prazdny konstruktor */
     private Tank() {
     }
 
-    // <TO-DO>dsadasd</TO-DO>
     public Tank(int x, int y, int tankID) {
         this.tankId = tankID;
         this.xcoord = x;
@@ -36,13 +35,14 @@ public class Tank {
         bullets = new ArrayList<Bullet>();
     }
 
+    /** Prepocitat pociatocnu absolutnu poziciu na mape na zaklade suradnice */
     public void CalcAbsolutePosition() {
         int posx = ycoord * mapWidth + (mapWidth - tankWidth) / 2;
         int posy = xcoord * mapHeight + (mapHeight - tankHeight) / 2;
         absPos = new Point(posx, posy);
     }
-    // TO-DO: Not implement yet!
 
+    /** Vygenerovanie noveho tanka do volnej pozicie */
     public static Tank GenerateNewTank(int tankID) {
         boolean m[][] = game.map.getMap();
         Random rnd = new Random();
@@ -57,6 +57,7 @@ public class Tank {
         return new Tank(y, x, tankID);
     }
 
+    /** Pohyb o ppm pixelov */
     public void Move(int ppm) {
         if (absPos == null) {
             return;
@@ -91,13 +92,16 @@ public class Tank {
         //System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "] smer" + direction);
 
     }
-    private boolean isFree(int px, int py){
+    /** Zisti, ci je volna pozicia s absolutnou suradnicou [x,y] v okne */
+    private boolean isFree(int px, int py) {
         boolean b = game.map.isFreeAbs(px, py);
-        b &= game.map.isFreeAbs(px, py+tankHeight);
-        b &= game.map.isFreeAbs(px+tankWidth, py);
-        b &= game.map.isFreeAbs(px+tankWidth, py+tankHeight);
+        b &= game.map.isFreeAbs(px, py + tankHeight);
+        b &= game.map.isFreeAbs(px + tankWidth, py);
+        b &= game.map.isFreeAbs(px + tankWidth, py + tankHeight);
         return b;
     }
+
+    /** Strelba tanka, vytvori novy nabol do zoznam nabojov na zaklade otocenia tanka */
     public void Shot() {
         int x = 0;
         int y = 0;
@@ -125,7 +129,7 @@ public class Tank {
         }
         bullets.add(new Bullet(direction, x, y));
     }
-
+    /** Zisti ci nejaky bod s tankom koliduje */
     boolean isCollision(int x, int y) {
         return (x >= absPos.x && y >= absPos.y && (x - absPos.x) <= tankWidth && (y - absPos.y) <= tankHeight);
     }

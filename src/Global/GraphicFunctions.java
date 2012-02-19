@@ -14,11 +14,12 @@ import java.awt.image.BufferedImage;
  */
 public class GraphicFunctions {
 
+    /** skalovanie obrazka na novy rozmer */
     public static BufferedImage Rescale(BufferedImage srcImg, int destW, int destH) {
         BufferedImage dest = new BufferedImage(destW, destH, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = dest.createGraphics();
         AffineTransform at = AffineTransform.getScaleInstance((double) destW / srcImg.getWidth(), (double) destH / srcImg.getHeight());
         g.drawRenderedImage(srcImg, at);
         return dest;
-    } 
+    }
 }

@@ -22,11 +22,6 @@ public class Bullet {
         this.posy = posy;
     }
 
-    /**
-     * Pohyb striel
-     * @param ppm pixel per move
-     * @return 
-     */
     public int move(int ppm) {
         int dx = 0;
         int dy = 0;
@@ -45,6 +40,7 @@ public class Bullet {
         return DetectCollision();
     }
 
+    /** Detekovanie kolizie naboja s inym objektom. */
     private int DetectCollision() {
         if (game.map.isFreeAbs(posx, posy)) {
             if (game.tank1.isCollision(posx, posy)

@@ -23,10 +23,11 @@ import static Global.Constants.*;
  * @author Lijun
  */
 public class Explosion extends JPanel {
-
+/** Jednotlive framy na animaciu vybuchu */
     Image[] imgs = new Image[25];
     private int index = 0;
     private Timer t = null;
+    /** Callback funkcia po ukonceni animacie */
     private ICallBack callback = null;
     private int imgSize = 64;
     private int posx = 0;
@@ -41,7 +42,7 @@ public class Explosion extends JPanel {
 
     public void postExec(){
         if (this.callback == null) {
-           throw new UnsupportedOperationException();
+           return;
         }
         this.callback.postExec();
     }
@@ -66,13 +67,7 @@ public class Explosion extends JPanel {
         });
         t.start();
     }
-
-    public void Show(int posx, int posy) {
-        this.index = 0;
-        this.setVisible(true);
-        Explode(parent, posx, posy);
-    }
-
+    
     public void Explode(final JFrame window, int posx, int posy) {
         this.posx = posx;
         this.posy = posy;
@@ -82,22 +77,14 @@ public class Explosion extends JPanel {
     }
 
     public void Explode() {
-        
-        Thread th1 = new Thread(new Runnable() {
+        Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
                 Expl();
             }
         });
-        th1.start();
-
-        Thread th2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SoundEffect.PlayExplosion();
-            }
-        });
-        th2.start();
+        th.start();
+        SoundEffect.PlayExplosion();
     }
 
     @Override

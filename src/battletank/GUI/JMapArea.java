@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Trieda, ktora reprezentuje GUI celej mapy vratane tankov a nabojov.
+ * Ulohou tejto triedy je stav hry prekreslit do GUI.
  */
 package battletank.GUI;
 
@@ -12,7 +12,6 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import static Global.Constants.*;
@@ -45,8 +44,10 @@ public class JMapArea extends JPanel {
             this.map = game.map.getMap();
             mapHeight = this.getHeight() / map.length;
             mapWidth = this.getWidth() / map[0].length;
+            //Aby tank nemal prilis malo miesta, tak je len 80% sirky(vysky) z jedneho policka mapy.
             tankWidth = (int) (0.8 * mapWidth);
             tankHeight = (int) (0.8 * mapHeight);
+            
             this.setLayout(new GridLayout(map[0].length, map.length));
             game.tank1.CalcAbsolutePosition();
             game.tank2.CalcAbsolutePosition();

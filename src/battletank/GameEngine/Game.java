@@ -1,11 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Herne jadro: u sebe ma informacie o tank 1, tank 2 a mapu.
+ * Sluzi zaroven ako spojka medzi strukturou hry a GUI.
  */
 package battletank.GameEngine;
 
-import java.util.Iterator;
-import java.util.ArrayList;
 import Effects.SoundEffect;
 import battletank.GUI.GameWindow;
 import static Global.Constants.*;
@@ -15,44 +13,23 @@ import static Global.Constants.*;
  * @author Lijun
  */
 public class Game {
-
-    private final int UP = 0;
-    private final int DOWN = 1;
-    private final int LEFT = 2;
-    private final int RIGHT = 3;
+    
     public Map map = null;
     public Tank tank1 = null;
     public Tank tank2 = null;
-    private boolean t1Move = false;
-    private int t1Direction = UP;
-    private boolean t2Move = false;
-    private int t2Direction = UP;
+    
     private GameWindow gamewindow = null;
-    public int gameTp = LOCALGAME;
+    
     public int player1lives = 50;
     public int player2lives = 50;
 
     public Game() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                SoundEffect.PlayBackgroundSound();
-            }
-        }).start();
+        SoundEffect.PlayBackgroundSound();
     }
 
     public Game(GameWindow window) {
         gamewindow = window;
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                SoundEffect.PlayBackgroundSound();
-            }
-        }).start();
-
+        SoundEffect.PlayBackgroundSound();
     }
 
     public void PauseGame() {
@@ -79,7 +56,7 @@ public class Game {
                     if (res == TankCollision) {
                         DeleteTank(tank2);
                         player2lives--;
-                        gamewindow.repaint();
+                        gamewindow.update(gamewindow.getGraphics());
                     }
                     tank1.bullets.remove(b);
                     gamewindow.repaint(bx, by, 5, 5);
@@ -128,10 +105,14 @@ public class Game {
 
     private void DeleteTank(Tank tank) {
         gamewindow.DeleteTank(tank);
-        gamewindow.repaint(gamewindow.getHeight(),0, gamewindow.getWidth()-gamewindow.getHeight(), gamewindow.getHeight());
+        gamewindow.repaint(gamewindow.getHeight(), 0, gamewindow.getWidth() - gamewindow.getHeight(), gamewindow.getHeight());
     }
 
     void repaintTank(Tank tnk) {
         gamewindow.repaint(tnk.absPos.x - pixelPerMove, tnk.absPos.y - pixelPerMove, tankWidth + 2 * pixelPerMove, tankHeight + 2 * pixelPerMove);
+    }
+
+    void ContinueGame() {
+        gamewindow.Continue();
     }
 }

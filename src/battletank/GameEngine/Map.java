@@ -1,7 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Trieda Map v sebe nesie informacie o mape a poskytuje zakladne funkcie
+ * na prepocet medzi suradnicami a poziciami na mape.
  */
+
 package battletank.GameEngine;
 
 import java.io.BufferedReader;
@@ -31,6 +32,7 @@ public class Map {
         }
     }
 
+    /** Nacitanie mapy zo suboru "map/map.dat" */
     private void ReadMap(String filename) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
         String s = reader.readLine();
@@ -75,6 +77,7 @@ public class Map {
         return (absY + mapHeight - 1) / mapHeight - 1;
     }
 
+    /** Zisti, ci je volne policko na suradnici (x,y) */
     public boolean isFreeAbs(int absPosX, int absPosY) {
         if (map == null) {
             return false;
@@ -86,6 +89,7 @@ public class Map {
         return isFree(x, y);
     }
 
+    /** Zisti, ci je volne policko na pozici [x,y] */
     public boolean isFree(int x, int y) {
         if (map == null) {
             return false;
