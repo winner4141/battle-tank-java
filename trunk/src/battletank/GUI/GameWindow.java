@@ -14,6 +14,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import static Global.Constants.*;
 
 /**
@@ -22,23 +23,23 @@ import static Global.Constants.*;
  */
 public class GameWindow extends JFrame {
 
-    // Cast GUI, kde je nakreslena mapa
+    /** Cast GUI, kde je nakreslena mapa */
     private JMapArea mapArea = null;
-    // Cast GUI, kde su informacie, napr. skore.
+    /** Cast GUI, kde su informacie, napr. skore. */
     private JScoreArea scoreArea = null;
-    private Container cp = null;
+    /** Vybuch na mape */
     private Explosion expl = null;
     private int ExplID = 0;
-    private int width = 1024;
-    private int height = 768;
+    private int width = 800;
+    private int height = 600;
+    /** Ovladac hry, su v nom definicie klavesnice a celkove ovladanie hry */
     private GameControl gameControl = null;
-    private DialogBox dialogbox = null;
     private boolean explTank1 = false;
     private boolean explTank2 = false;
     private int dir1 = NONE;
     private int dir2 = NONE;
-    boolean online = false;
-    String ipAddr = null;
+
+    /** CallBack funkcia po vybuchu */
     private ICallBack callback() {
         return new ICallBack() {
 
@@ -49,6 +50,7 @@ public class GameWindow extends JFrame {
                     expl = null;
                 }
                 if (explTank1) {
+                    // Ak bol vybuchnuty 1. tank, tak vygenurujem novy.
                     game.tank1 = Tank.GenerateNewTank(tank1ID);
                     game.tank1.CalcAbsolutePosition();
                     mapArea.drawT1 = true;
@@ -56,6 +58,7 @@ public class GameWindow extends JFrame {
                     explTank1 = false;
                 }
                 if (explTank2) {
+                    // Ak bol vybuchnuty 2. tank, tak vygenurujem novy.
                     game.tank2 = Tank.GenerateNewTank(tank2ID);
                     game.tank2.CalcAbsolutePosition();
                     mapArea.drawT2 = true;
@@ -80,24 +83,29 @@ public class GameWindow extends JFrame {
         HandleArgs(args);
         InitWindow();
     }
-
+/** Inicializacia hracieho okna a herneho jadra */
     private void InitWindow() {
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pixelPerMove = this.height / 300;
         game = new Game(this);
         game.map = new Map();
         game.GenerateTanks();
 
         gameControl = new GameControl();
-        mapArea = new JMapArea(null, true, new Dimension(height, height));
+        int mapsize = Math.min(height, (int) (0.8 * width));
+        mapArea = new JMapArea(null, true, new Dimension(mapsize, mapsize));
         addKeyListener(gameControl);
 
-        if (scoreArea == null) scoreArea = new JScoreArea();
-
+        if (scoreArea == null) {
+            scoreArea = new JScoreArea();
+        }
+        
         this.pack();
         this.setVisible(true);
         this.setSize(width, height);
-
+        
+        // Ostartovanie hry
         gameControl.Start();
     }
 
@@ -109,16 +117,19 @@ public class GameWindow extends JFrame {
             expl.paint(g);
         }
     }
-
+    /** Vyvolane pri stlaceni ESC, po stlaceni OK pokracovanie v hre */
     public void Pause() {
-        //dialogbox = new DialogBox("Game paused");
+        JOptionPane.showMessageDialog(this.getContentPane(), "Game paused !");
+        Continue();
         //dialogbox.setVisible(true);
     }
-
-    public void Continie() {
-        //cp.remove(dialogbox);
+    /** Pokracovanie v hre */
+    public void Continue() {
+        gameControl.paused = false;
+        gameControl.Start();
     }
 
+    /** Vymazat tank po zasiahnuti */
     public void DeleteTank(Tank tank) {
         ExplID++;
         if (tank.tankId == tank1ID) {
@@ -144,6 +155,7 @@ public class GameWindow extends JFrame {
         }
     }
 
+    /** Spracovanie argumentov */
     private void HandleArgs(String[] args) {
         try {
             for (int i = 0; i < args.length; i++) {
@@ -154,16 +166,11 @@ public class GameWindow extends JFrame {
                     int h = Integer.valueOf(res[1]).intValue();
                     this.width = w;
                     this.height = h;
-                }else if (args[i].compareTo("-players")==0){
+                } else if (args[i].compareTo("-players") == 0) {
                     scoreArea = new JScoreArea();
                     scoreArea.player1 = args[++i];
                     scoreArea.player2 = args[++i];
-                }else
-                    if (args[i].compareTo("-host") == 0){
-                        online = true;
-                    }else if (args[i].compareTo("-conn")==0){
-                        ipAddr = args[++i];
-                    }                
+                }
             }
         } catch (Exception ex) {
         }

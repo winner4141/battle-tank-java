@@ -4,7 +4,7 @@
  */
 package battletank.GameEngine;
 
-import java.util.ArrayList;
+import Effects.SoundEffect;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -21,10 +21,9 @@ public class GameControl implements KeyListener {
     /** Cas medzi jednotlivymi strelami */
     private static final int freezeTime = 500;
     /** Cas medzi jednotlivymi krokmi tankov */
-    private static final int tankMoveTime = 50;
+    private static final int tankMoveTime = 20;
     /** Cas medzi jednotlivymi krokmi striel */
-    private static final int bulletMoveTime = 30;
-    
+    private static final int bulletMoveTime = 10;
     /** Timeout pre strelu z tank 1 */
     boolean freeze1 = false;
     /** Timeout pre strelu z tank 2 */
@@ -62,7 +61,7 @@ public class GameControl implements KeyListener {
     /* Tank2 strela */
     private final int t2Shoot = KeyEvent.VK_ENTER;
     /** Prerusena hra */
-    private boolean paused = false;
+    public boolean paused = false;
 
     public GameControl() {
         InitTimers();
@@ -94,7 +93,7 @@ public class GameControl implements KeyListener {
                 if (game == null) {
                     return;
                 }
-                // Kvoli strelbe tankov, ked stoji na mieste, vtedy smer nie je zaznamenany v tankoch
+                // parametre su kvoli strelbe tankov, ked stoji na mieste, vtedy smer nie je zaznamenany v tankoch
                 // aby to nekomplikovalo timer na pohyb tankov.
                 game.tanksMove(tank1direction, tank2direction);
             }
@@ -112,6 +111,7 @@ public class GameControl implements KeyListener {
         });
     }
 
+    /** Startovanie hry */
     private void StartAllTimers() {
         freezeTimer1.start();
         freezeTimer2.start();
@@ -135,13 +135,11 @@ public class GameControl implements KeyListener {
         int keycode = e.getKeyCode();
 
         if (keycode == KeyEvent.VK_ESCAPE) {
-            if (paused) {
-                StartAllTimers();
-            } else {
+            if (!paused) {
                 StopAllTimers();
-
+                paused = !paused;
+                game.PauseGame();
             }
-            paused = !paused;
             return;
         }
         switch (keycode) {
@@ -149,6 +147,7 @@ public class GameControl implements KeyListener {
             case t1Shoot: {
                 if (!freeze1) {
                     game.tank1.Shot();
+                    SoundEffect.PlayShotSound();
                     freeze1 = true;
                     freezeTimer1.start();
                 }
@@ -159,12 +158,13 @@ public class GameControl implements KeyListener {
             case t2Shoot: {
                 if (!freeze2) {
                     game.tank2.Shot();
+                    SoundEffect.PlayShotSound();
                     freeze2 = true;
                     freezeTimer2.start();
                 }
                 break;
             }
-                
+
             case t1Up: {
                 tank1direction = UP;
                 break;
@@ -202,8 +202,12 @@ public class GameControl implements KeyListener {
                 break;
         }
 
-        if (tank1direction!=NONE)game.tank1.direction = tank1direction;
-        if (tank2direction!=NONE)game.tank2.direction = tank2direction;
+        if (tank1direction != NONE) {
+            game.tank1.direction = tank1direction;
+        }
+        if (tank2direction != NONE) {
+            game.tank2.direction = tank2direction;
+        }
 
     }
 
