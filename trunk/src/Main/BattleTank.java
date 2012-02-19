@@ -1,4 +1,8 @@
-package battletank.GUI;
+package Main;
+
+
+import battletank.GUI.GameWindow;
+
 
 /**
  *
@@ -6,6 +10,6 @@ package battletank.GUI;
  */
 public class BattleTank {
     public static void main(String[] args){
-        new GameWindow();
+        new GameWindow(args);
     }
 }

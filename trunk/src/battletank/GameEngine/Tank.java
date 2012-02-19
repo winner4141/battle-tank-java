@@ -4,54 +4,129 @@
  */
 package battletank.GameEngine;
 
+import battletank.GUI.GameWindow;
 import java.util.ArrayList;
 import java.awt.Point;
+import java.util.Random;
 import static Global.Constants.*;
 
 /**
  *
  * @author Lijun
  */
-class Tank {
+public class Tank {
 
-    /** Position on map */
-    public int teamID = 0;
     /** Position on window */
-    private Point absPos = new Point(0, 0);
+    public Point absPos = null;
     /** Direction */
     public int direction = NONE;
     public ArrayList<Bullet> bullets = null;
+    public int tankId = 0;
+    public int xcoord = 0;
+    public int ycoord = 0;
 
-    public Tank() {
+    private Tank() {
+    }
+
+    // <TO-DO>dsadasd</TO-DO>
+    public Tank(int x, int y, int tankID) {
+        this.tankId = tankID;
+        this.xcoord = x;
+        this.ycoord = y;
         bullets = new ArrayList<Bullet>();
     }
 
-    public Tank(int posx, int posy) {
-        bullets = new ArrayList<Bullet>();
+    public void CalcAbsolutePosition() {
+        int posx = ycoord * mapWidth + (mapWidth - tankWidth) / 2;
+        int posy = xcoord * mapHeight + (mapHeight - tankHeight) / 2;
+        absPos = new Point(posx, posy);
+    }
+    // TO-DO: Not implement yet!
+
+    public static Tank GenerateNewTank(int tankID) {
+        boolean m[][] = game.map.getMap();
+        Random rnd = new Random();
+        int y = rnd.nextInt(m.length);
+        int x = rnd.nextInt(m[0].length);
+
+        while (!game.map.isFree(x, y)) {
+            y = rnd.nextInt(m.length);
+            x = rnd.nextInt(m[0].length);
+        }
+
+        return new Tank(y, x, tankID);
     }
 
     public void Move(int ppm) {
-        if (direction == NONE) {
+        if (absPos == null) {
             return;
         }
-        
-        if (direction == UP) {
-            absPos.y = absPos.y - ppm;
-        } else if (direction == DOWN) {
-            absPos.y = absPos.y + ppm;
-        } else if (direction == LEFT) {
-            absPos.x = absPos.x - ppm;
-        } else if (direction == RIGHT) {
-            absPos.x = absPos.x + ppm;
+
+        if (direction == NONE) {
+            System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "]");
+            return;
         }
+
+        int nposx = absPos.x;
+        int nposy = absPos.y;
+
+        if (direction == UP) {
+            nposy = absPos.y - ppm;
+        } else if (direction == DOWN) {
+            nposy = absPos.y + ppm;
+        } else if (direction == LEFT) {
+            nposx = absPos.x - ppm;
+        } else if (direction == RIGHT) {
+            nposx = absPos.x + ppm;
+        }
+
+        if (isFree(nposx, nposy)) {
+            absPos.x = nposx;
+            absPos.y = nposy;
+            game.repaintTank(this);
+        } else {
+            System.out.println("tank not moved!");
+        }
+
+        System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "] smer" + direction);
+
+    }
+    private boolean isFree(int px, int py){
+        boolean b = game.map.isFreeAbs(px, py);
+        b &= game.map.isFreeAbs(px, py+tankHeight);
+        b &= game.map.isFreeAbs(px+tankWidth, py);
+        b &= game.map.isFreeAbs(px+tankWidth, py+tankHeight);
+        return b;
+    }
+    public void Shot() {
+        int x = 0;
+        int y = 0;
+        switch (direction) {
+            case UP: {
+                y = absPos.y - 5;
+                x = absPos.x + (tankWidth / 2);
+                break;
+            }
+            case DOWN: {
+                y = absPos.y + tankHeight + 5;
+                x = absPos.x + (tankWidth / 2);
+                break;
+            }
+            case LEFT: {
+                x = absPos.x - 5;
+                y = absPos.y + (tankHeight / 2);
+                break;
+            }
+            case RIGHT: {
+                x = absPos.x + tankWidth + 5;
+                y = absPos.y + (tankHeight / 2);
+                break;
+            }
+        }
+        bullets.add(new Bullet(direction, x, y));
     }
 
-    public void Shot() {
-        throw new UnsupportedOperationException("Neimplementovany Tank.Shot");
-    }
-    
-    /** Vrati x-ovu suradnicu mapy */
-    public int getPosX(){
-        throw new UnsupportedOperationException();
+    boolean isCollision(int x, int y) {
+        return (x >= absPos.x && y >= absPos.y && (x - absPos.x) <= tankWidth && (y - absPos.y) <= tankHeight);
     }
 }
