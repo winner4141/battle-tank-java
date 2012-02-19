@@ -63,7 +63,7 @@ public class Tank {
         }
 
         if (direction == NONE) {
-            System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "]");
+            //System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "]");
             return;
         }
 
@@ -85,10 +85,10 @@ public class Tank {
             absPos.y = nposy;
             game.repaintTank(this);
         } else {
-            System.out.println("tank not moved!");
+            //System.out.println("tank not moved!");
         }
 
-        System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "] smer" + direction);
+        //System.out.println("(" + absPos.x + "," + absPos.y + ") [" + game.map.getX(absPos.x) + "," + game.map.getY(absPos.y) + "] smer" + direction);
 
     }
     private boolean isFree(int px, int py){

@@ -29,7 +29,9 @@ public class Game {
     private int t2Direction = UP;
     private GameWindow gamewindow = null;
     public int gameTp = LOCALGAME;
-    
+    public int player1lives = 50;
+    public int player2lives = 50;
+
     public Game() {
         new Thread(new Runnable() {
 
@@ -76,6 +78,8 @@ public class Game {
                 if (res != NonCollision) {
                     if (res == TankCollision) {
                         DeleteTank(tank2);
+                        player2lives--;
+                        gamewindow.repaint();
                     }
                     tank1.bullets.remove(b);
                     gamewindow.repaint(bx, by, 5, 5);
@@ -94,6 +98,8 @@ public class Game {
                 if (res != NonCollision) {
                     if (res == TankCollision) {
                         DeleteTank(tank1);
+                        player1lives--;
+                        gamewindow.repaint();
                     }
                     tank2.bullets.remove(b);
                     gamewindow.repaint(bx, by, 5, 5);
@@ -122,9 +128,10 @@ public class Game {
 
     private void DeleteTank(Tank tank) {
         gamewindow.DeleteTank(tank);
+        gamewindow.repaint(gamewindow.getHeight(),0, gamewindow.getWidth()-gamewindow.getHeight(), gamewindow.getHeight());
     }
-    
-    void repaintTank(Tank tnk){
-        gamewindow.repaint(tnk.absPos.x-pixelPerMove, tnk.absPos.y-pixelPerMove, tankWidth+2*pixelPerMove, tankHeight+2*pixelPerMove);
+
+    void repaintTank(Tank tnk) {
+        gamewindow.repaint(tnk.absPos.x - pixelPerMove, tnk.absPos.y - pixelPerMove, tankWidth + 2 * pixelPerMove, tankHeight + 2 * pixelPerMove);
     }
 }
