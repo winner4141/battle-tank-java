@@ -4,6 +4,7 @@
  */
 package battletank.GUI;
 
+import java.awt.Image;
 import battletank.GameEngine.Bullet;
 import Global.GraphicFunctions;
 import java.awt.Dimension;
@@ -28,8 +29,8 @@ public class JMapArea extends JPanel {
     BufferedImage bul = null;
     BufferedImage mapImg0 = null;
     BufferedImage mapImg1 = null;
-    BufferedImage[] tank1 = new BufferedImage[4];
-    BufferedImage[] tank2 = new BufferedImage[4];
+    Image[] tank1 = new BufferedImage[4];
+    Image[] tank2 = new BufferedImage[4];
     boolean drawT1 = false;
     boolean drawT2 = false;
     
@@ -107,7 +108,7 @@ public class JMapArea extends JPanel {
         }
     }
     
-    private void ToImageArray(BufferedImage im, BufferedImage[] tank, int x) {
+    private void ToImageArray(BufferedImage im, Image[] tank, int x) {
         for (int i = 0; i < 4; i++) {
             BufferedImage _img = im.getSubimage(i * im.getWidth() / 4, x * im.getHeight() / 2, im.getWidth() / 4, im.getHeight() / 2);
             tank[i] = GraphicFunctions.Rescale(_img, tankWidth, tankHeight);

@@ -121,7 +121,6 @@ public class GameWindow extends JFrame {
 
     public void DeleteTank(Tank tank) {
         ExplID++;
-
         if (tank.tankId == tank1ID) {
             dir1 = tank.direction;
             int x = game.tank1.absPos.x;
@@ -143,14 +142,6 @@ public class GameWindow extends JFrame {
             expl.setCallBack(callback());
             expl.Explode(this, x, y);
         }
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-        Dimension d = this.getSize();
-        int s = Math.min(d.height, (int) (0.8 * d.width));
-        mapArea.setSize(s, s);
     }
 
     private void HandleArgs(String[] args) {
