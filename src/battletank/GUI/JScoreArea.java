@@ -20,6 +20,7 @@ public class JScoreArea extends JPanel {
     Font f = new Font("Times New Roman", Font.BOLD, 20);
 
     public JScoreArea() {
+         this.setDoubleBuffered(true);
     }
 
     @Override

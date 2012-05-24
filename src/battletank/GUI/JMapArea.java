@@ -71,7 +71,7 @@ public class JMapArea extends JPanel {
         if (map == null) {
             return;
         }
-
+        
         int h = getHeight();
         int w = getWidth();
         for (int i = 0; i < map.length; i++) {
